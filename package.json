@@ -1,0 +1,10 @@
+{
+  "name": "spatial-audio-interface",
+  "version": "0.0.1",
+  "description": "control app for live manipulation of spatial audio.",
+  "dependencies": {
+    "express": "^4.13.1",
+    "node-osc": "^1.1.0",
+    "socket.io": "^1.3.5"
+  }
+}
