@@ -30,14 +30,23 @@
 
     <!-- Script for processing incoming OSC messages -->
     <script>
-      socket.on('message', function(msg_array) {
-        var status = document.getElementById("status");
-        status.innerHTML = msg_array;
-        console.log("Recv",msg_array);
-        if (msg_array[0] === "/knob") {
-          $(".dial").val(msg_array[1]).trigger('change');
+      socket.on("OSC message", function(osc_obj) {
+        if (osc_obj.oscType === "bundle") {
+          for (var i=0; i<osc_obj.elements.length; i++) {
+            parseOSCMessage(osc_obj.elements[i]);
+          }
+        } else {
+          parseOSCMessage(osc_obj);
         }
       });
+      function parseOSCMessage(osc_obj) {
+        var status = document.getElementById("status");
+        status.innerHTML = JSON.stringify(osc_obj);
+        console.log("Recv",osc_obj);
+        if (osc_obj.address === "/knob") {
+          $(".dial").val(osc_obj.args[0]).trigger('change');
+        }
+      }
     </script>
 
     <!-- KNOB START-->
@@ -48,9 +57,12 @@
     <script>
       $(".dial").knob({
         'change' : function(v) {
-          var msg_array = ['/knob', v];
-          socket.emit('message', msg_array);
-          console.log("Send",msg_array);
+          var osc_message = {
+            address: "/knob",
+            args:[v]
+          }
+          socket.emit("OSC message", osc_message);
+          console.log("Send",osc_message);
         }
       });
     </script>
